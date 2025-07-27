@@ -12,7 +12,7 @@ jobs:
       - name: Get minecraft versions
         id: get-mc-versions
         run: |
-          echo "mc-versions=$(curl -s -H 'accept: application/json' -H "User-Agent: ${GITHUB_REPOSITORY,,}" "https://fill.papermc.io/v3/projects/paper/versions" | jq -c '[.versions[].version.id]')" >> "$GITHUB_OUTPUT"
+          echo "mc-versions=$(curl -s -H 'accept: application/json' -H "User-Agent: ${GITHUB_REPOSITORY,,}" "https://fill.papermc.io/v3/projects/paper/versions" | jq -c '[.versions[] | {id: .version.id, minJava: .version.java.version.minimum}]')" >> "$GITHUB_OUTPUT"
   build:
     runs-on: ubuntu-latest
     steps:
