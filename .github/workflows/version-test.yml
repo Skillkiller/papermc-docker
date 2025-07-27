@@ -49,11 +49,11 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: papermc-jdk-${{ matrix.java-version }}.tar
+          name: papermc-jdk-${{ matrix.mc-version.JAVA_VERSION }}.tar
           path: ${{ runner.temp }}
       - name: Load image
         run: |
-          docker load --input ${{ runner.temp }}/papermc-jdk-${{ matrix.java-version }}.tar
+          docker load --input ${{ runner.temp }}/papermc-jdk-${{ matrix.mc-version.JAVA_VERSION }}.tar
           docker image ls -a
       - name: Define Color
         env:
