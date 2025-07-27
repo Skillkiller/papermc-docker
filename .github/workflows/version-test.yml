@@ -13,6 +13,31 @@ jobs:
         id: get-mc-versions
         run: |
           echo "mc-versions=$(curl -s -H 'accept: application/json' -H "User-Agent: ${GITHUB_REPOSITORY,,}" "https://fill.papermc.io/v3/projects/paper/versions" | jq -c '[.versions[] | {MC_VERSION: .version.id, JAVA_VERSION: .version.java.version.minimum}]')" >> "$GITHUB_OUTPUT"
+  build-images:
+    name: Build docker images
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [11, 17, 21]
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Lowercase repo name
+        run: echo "REPO=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+
+      - name: Build and export
+        uses: docker/build-push-action@v6
+        with:
+          tags: ${{ env.REPO }}:jdk-${{ matrix.java-version }}
+          build-args: MINEBASE_IMAGE=jdk-${{ matrix.java-version }}
+          outputs: type=docker,dest=${{ runner.temp }}/papermc-jdk-${{ matrix.java-version }}.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: myimage
+          path: ${{ runner.temp }}/myimage.tar
   build:
     runs-on: ubuntu-latest
     steps:
