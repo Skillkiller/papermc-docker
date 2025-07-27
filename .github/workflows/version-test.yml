@@ -60,3 +60,8 @@ jobs:
           MC_VERSION: ${{ matrix.mc-version.MC_VERSION }}
           JAVA_VERSION: ${{ matrix.mc-version.JAVA_VERSION }}
         run: echo "MC $MC_VERSION - Java $JAVA_VERSION"
+      - name: Start mc server
+        env:
+          MC_VERSION: ${{ matrix.mc-version.MC_VERSION }}
+          JAVA_VERSION: ${{ matrix.mc-version.JAVA_VERSION }}
+        run: timeout 30 docker run -e "VERSION=${{ matrix.mc-version.MC_VERSION }}" --rm skillkiller/papermc-docker:jdk-${{ matrix.mc-version.JAVA_VERSION }}
