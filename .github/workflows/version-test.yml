@@ -12,7 +12,7 @@ jobs:
       - name: Get minecraft versions
         id: get-mc-versions
         run: |
-          echo "mc-versions=$(curl -s -H 'accept: application/json' -H "User-Agent: ${GITHUB_REPOSITORY,,}" "https://fill.papermc.io/v3/projects/paper/versions" | jq -c '[.versions[] | {id: .version.id, minJava: .version.java.version.minimum}]')" >> "$GITHUB_OUTPUT"
+          echo "mc-versions=$(curl -s -H 'accept: application/json' -H "User-Agent: ${GITHUB_REPOSITORY,,}" "https://fill.papermc.io/v3/projects/paper/versions" | jq -c '[.versions[] | {MC_VERSION: .version.id, JAVA_VERSION: .version.java.version.minimum}]')" >> "$GITHUB_OUTPUT"
   build:
     runs-on: ubuntu-latest
     steps:
@@ -51,5 +51,6 @@ jobs:
           docker image ls -a
       - name: Define Color
         env:
-          MC_VERSION: ${{ matrix.mc-version }}
-        run: echo "$MC_VERSION"
+          MC_VERSION: ${{ matrix.mc-version.MC_VERSION }}
+          JAVA_VERSION: ${{ matrix.mc-version.JAVA_VERSION }}
+        run: echo "MC $MC_VERSION - Java $JAVA_VERSION"
