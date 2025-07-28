@@ -60,8 +60,59 @@ jobs:
           MC_VERSION: ${{ matrix.mc-version.MC_VERSION }}
           JAVA_VERSION: ${{ matrix.mc-version.JAVA_VERSION }}
         run: echo "MC $MC_VERSION - Java $JAVA_VERSION"
-      - name: Start mc server
+      - name: Start Minecraft server
         env:
           MC_VERSION: ${{ matrix.mc-version.MC_VERSION }}
           JAVA_VERSION: ${{ matrix.mc-version.JAVA_VERSION }}
-        run: timeout 30 docker run -e "VERSION=${{ matrix.mc-version.MC_VERSION }}" --rm skillkiller/papermc-docker:jdk-${{ matrix.mc-version.JAVA_VERSION }}
+        run: |
+          echo -e "enable-rcon=true\nrcon.password=$(openssl rand -hex 16)\nrcon.port=25575" > server.properties
+
+          CONTAINER_ID=$(docker run --rm -d \
+            -e "VERSION=$MC_VERSION" \
+            -p "25565:25565" \
+            -v "./server.properties:/etc/mcserver/locals/server.properties" \
+            ghcr.io/zekrotja/papermc-docker:jdk-$JAVA_VERSION)
+
+          echo "Container started: $CONTAINER_ID"
+          echo "Waiting for RCON connection (timeout 120s)..."
+
+          TIMEOUT=120
+          SECONDS_PASSED=0
+          INTERVAL=1
+
+          until docker exec "$CONTAINER_ID" rcon stop 2>/dev/null; do
+            sleep $INTERVAL
+            ((SECONDS_PASSED+=INTERVAL))
+            if (( SECONDS_PASSED >= TIMEOUT )); then
+              echo "::error::Timeout after $TIMEOUT seconds waiting for server to become available."
+              exit 1
+            fi
+          done
+
+          echo "Server started successfully."
+
+          SEARCH="Starting minecraft server version"
+          LOG_OUTPUT=$(docker logs "$CONTAINER_ID" 2>&1)
+          MATCHES=$(echo "$LOG_OUTPUT" | grep "$SEARCH" || true)
+          MATCH_COUNT=$(echo "$MATCHES" | wc -l)
+
+          if [[ "$MATCH_COUNT" -ne 1 ]]; then
+            echo "::error::Expected exactly 1 occurrence of '$SEARCH', but found $MATCH_COUNT"
+            exit 1
+          fi
+
+          MATCHED_LINE="$MATCHES"
+          echo "Log line found: $MATCHED_LINE"
+
+          EXPECTED="Starting minecraft server version $MC_VERSION"
+          ACTUAL="$MATCHED_LINE"
+
+          echo "Expected: $EXPECTED"
+          echo "Actual:   $ACTUAL"
+
+          if [[ "$ACTUAL" == *"$EXPECTED" ]]; then
+            echo "✅ Expected Minecraft server version started."
+          else
+            echo "::error::Unexpected Minecraft server version started."
+            exit 2
+          fi
