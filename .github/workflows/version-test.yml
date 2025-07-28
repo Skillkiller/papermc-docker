@@ -55,11 +55,8 @@ jobs:
         run: |
           docker load --input ${{ runner.temp }}/papermc-jdk-${{ matrix.mc-version.JAVA_VERSION }}.tar
           docker image ls -a
-      - name: Define Color
-        env:
-          MC_VERSION: ${{ matrix.mc-version.MC_VERSION }}
-          JAVA_VERSION: ${{ matrix.mc-version.JAVA_VERSION }}
-        run: echo "MC $MC_VERSION - Java $JAVA_VERSION"
+      - name: Lowercase repo name
+        run: echo "REPO=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
       - name: Start Minecraft server
         env:
           MC_VERSION: ${{ matrix.mc-version.MC_VERSION }}
