@@ -71,7 +71,7 @@ jobs:
             -e "VERSION=$MC_VERSION" \
             -p "25565:25565" \
             -v "./server.properties:/etc/mcserver/locals/server.properties" \
-            ghcr.io/zekrotja/papermc-docker:jdk-$JAVA_VERSION)
+            ${{ env.REPO }}:jdk-$JAVA_VERSION)
 
           echo "Container started: $CONTAINER_ID"
           echo "Waiting for RCON connection (timeout 120s)..."
