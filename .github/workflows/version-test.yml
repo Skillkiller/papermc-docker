@@ -78,20 +78,15 @@ jobs:
             ${{ env.REPO }}:jdk-$JAVA_VERSION)
 
           echo "Container started: $CONTAINER_ID"
-          echo "Waiting for RCON connection (timeout 120s)..."
 
-          TIMEOUT=120
-          SECONDS_PASSED=0
-          INTERVAL=1
-
-          until docker exec "$CONTAINER_ID" rcon stop 2>/dev/null; do
-            sleep $INTERVAL
-            ((SECONDS_PASSED+=INTERVAL))
-            if (( SECONDS_PASSED >= TIMEOUT )); then
-              echo "::error::Timeout after $TIMEOUT seconds waiting for server to become available."
-              docker logs "$CONTAINER_ID" 2>&1
-              exit 1
-            fi
+          TEILSTRING="Starting minecraft server version $MC_VERSION"
+          docker logs -f "$CONTAINER_ID" | while IFS= read -r line; do
+              echo "$line"
+              if [[ "$line" == *"$TEILSTRING"* ]]; then
+                  echo "Teilstring gefunden, Skript wird beendet."
+                  pkill -P $$ docker
+                  break
+              fi
           done
 
           echo "Server started successfully."
