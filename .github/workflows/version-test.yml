@@ -72,7 +72,7 @@ jobs:
 
           CONTAINER_ID=$(docker run --rm -d \
             -e "VERSION=$MC_VERSION" \
-            -e "JVM_PARAMS="
+            -e "JVM_PARAMS=" \
             -p "25565:25565" \
             -v "./server.properties:/etc/mcserver/locals/server.properties" \
             ${{ env.REPO }}:jdk-$JAVA_VERSION)
