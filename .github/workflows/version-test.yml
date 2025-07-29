@@ -15,9 +15,9 @@ jobs:
         run: |
           PAPERMC_VERSIONS=$(curl -s -H 'accept: application/json' -H "User-Agent: ${GITHUB_REPOSITORY,,}" "https://fill.papermc.io/v3/projects/paper/versions")
           echo "$PAPERMC_VERSIONS"
-          echo "mc-versions=$(echo \"$PAPERMC_VERSIONS\" | jq -c '[.versions[] | {MC_VERSION: .version.id, JAVA_VERSION: .version.java.version.minimum}]')" >> "$GITHUB_OUTPUT"
+          echo "mc-versions=$(echo "$PAPERMC_VERSIONS" | jq -c '[.versions[] | {MC_VERSION: .version.id, JAVA_VERSION: .version.java.version.minimum}]')" >> "$GITHUB_OUTPUT"
           echo "" >> "$GITHUB_OUTPUT"
-          echo "java-versions=$(echo \"$PAPERMC_VERSIONS\" | jq -c '[.versions[].version.java.version.minimum] | sort | unique')" >> "$GITHUB_OUTPUT"
+          echo "java-versions=$(echo "$PAPERMC_VERSIONS" | jq -c '[.versions[].version.java.version.minimum] | sort | unique')" >> "$GITHUB_OUTPUT"
   build-images:
     name: Build docker images
     runs-on: ubuntu-latest
