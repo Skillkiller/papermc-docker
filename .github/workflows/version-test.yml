@@ -70,7 +70,7 @@ jobs:
         run: |
           echo -e "enable-rcon=true\nrcon.password=$(openssl rand -hex 16)\nrcon.port=25575" > server.properties
 
-          CONTAINER_ID=$(docker run --rm -d \
+          CONTAINER_ID=$(docker run -d \
             -e "VERSION=$MC_VERSION" \
             -e "JVM_PARAMS=" \
             -p "25565:25565" \
