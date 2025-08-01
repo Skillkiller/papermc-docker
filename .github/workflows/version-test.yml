@@ -152,7 +152,7 @@ jobs:
         id: out
         with:
           matrix-step-name: ${{ github.job }}
-          matrix-key: ${{ matrix.mc-version }}
+          matrix-key: ${{ matrix.mc-version.MC_VERSION }}
           outputs: |-
             status: ${{ steps.start-server.outputs.status }}
             log-line: ${{ steps.start-server.outputs.log-line }}
