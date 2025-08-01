@@ -1,6 +1,7 @@
 name: Version test
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   get-versions:
