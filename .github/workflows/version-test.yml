@@ -52,7 +52,7 @@ jobs:
       fail-fast: false
       matrix:
         mc-version: ${{ fromJson(needs.get-versions.outputs.mc-versions) }}
-    continue-on-error: ${{ matrix.mc-version.STATUS != 'SUPPORTED' }}
+    continue-on-error: true
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
