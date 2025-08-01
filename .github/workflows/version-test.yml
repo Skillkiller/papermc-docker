@@ -155,7 +155,6 @@ jobs:
           matrix-key: ${{ matrix.mc-version.MC_VERSION }}
           outputs: |-
             status: ${{ steps.start-server.outputs.status }}
-            log-line: ${{ steps.start-server.outputs.log-line }}
 
   ## Read matrix outputs 
   read:
